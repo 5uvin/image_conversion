@@ -56,8 +56,14 @@ class ImageRepublisher : public rclcpp::Node
 public:
     ImageRepublisher() : Node("image_conversion_node")
     {   
-        subscriber_ = this->create_subscription<sensor_msgs::msg::Image>("image_raw", 10, std::bind(&ImageRepublisher::topic_callback, this, _1));
-        publisher_ = this->create_publisher<sensor_msgs::msg::Image>("image_repub", 10);
+        this->declare_parameter<std::string>("input_camera_topic", "/image_raw");
+        this->declare_parameter<std::string>("output_camera_topic", "/image_repub");
+
+        input_camera_topic_ = this->get_parameter("input_camera_topic").as_string();
+        output_camera_topic_ = this->get_parameter("output_camera_topic").as_string();
+
+        subscriber_ = this->create_subscription<sensor_msgs::msg::Image>(input_camera_topic_, 10, std::bind(&ImageRepublisher::topic_callback, this, _1));
+        publisher_ = this->create_publisher<sensor_msgs::msg::Image>(output_camera_topic_, 10);
     }
 
     void topic_callback(const sensor_msgs::msg::Image &msg) const
@@ -89,6 +95,9 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscriber_;
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher_;
     sensor_msgs::msg::Image::SharedPtr gray_msg;
+
+    std::string input_camera_topic_;
+    std::string output_camera_topic_;
 
 };
 
