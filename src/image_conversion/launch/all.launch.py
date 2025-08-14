@@ -6,7 +6,11 @@ def generate_launch_description():
         Node(
             package='image_conversion',
             executable='image_conversion_node',
-            name='image_conversion_node'
+            name='image_conversion_node',
+            parameters=[{
+                'input_camera_topic': '/image_raw',
+                'output_camera_topic': '/image_repub'
+            }]
         ),
         Node(
             package='usb_cam',
